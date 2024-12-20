@@ -9,5 +9,53 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script type="importmap">
+      {
+          "imports": {
+              "three": "../node_modules/three/build/three.module.js",
+              "three/addons/": "./jsm/"
+          }
+      }
+  </script>
+  <script type="module" >
+      import * as THREE from 'three';
+      const width = window.innerWidth, height = window.innerHeight;
+
+      const camera = new THREE.PerspectiveCamera( 100, width / height, 0.01, 10 );
+      camera.position.z = 1;
+
+      const scene = new THREE.Scene();
+      const light = new THREE.PointLight(0xffffff, 1000)
+      light.position.set(10, 10, 10)
+      scene.add(light)
+      const texture = new THREE.TextureLoader().load( 'texture.jpg' );
+      texture.rotation = 0.1
+      texture.repeat.set( 1,1 );
+      const geometry = new THREE.BoxGeometry(  0.4, 0.4, 0.4 );
+      
+      const material = new THREE.MeshStandardMaterial({
+         map: texture, 
+         bumpMap: texture,
+         bumpScale: 4
+      });
+      const mesh = new THREE.Mesh( geometry, material );
+      scene.add( mesh );
+      mesh.rotation.y = -1
+      const renderer = new THREE.WebGLRenderer( { antialias: true } );
+      renderer.setSize( width, height );
+      renderer.setAnimationLoop( animate );
+      document.body.appendChild( renderer.domElement );
+
+      // animation
+
+      function animate( time ) {
+          camera.position.z = 1 + Math.sin( time / 1000 ) * .5;
+          mesh.rotation.y = time / 1000;
+          mesh.rotation.x = time / 1000;
+
+          renderer.render( scene, camera );
+      }
+
+  </script>
   </body>
 </html>
